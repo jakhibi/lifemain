@@ -31,4 +31,3 @@ lerna-debug.log*
 .settings/
 *.sublime-workspace
 .terraform
-app.yaml

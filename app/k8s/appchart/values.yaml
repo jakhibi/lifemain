@@ -5,7 +5,7 @@ deployment:
     containerSecurityContext:
       allowPrivilegeEscalation: false
     image:
-      repository: nimboya/eks-helm-test
+      repository: nimboya/k8-helm-test
       tag: latest
     resources:
       limits:

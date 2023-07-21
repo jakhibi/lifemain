@@ -6,7 +6,7 @@ startupyr = os.environ('STARTUP_YR')
 
 @app.route('/')
 def hello():
-    return '<h1>Hello, Welcome to my Microservice!</h1> ' + startup
+    return '<h1>Hello, Welcome to my Microservice!</h1> ' + startupyr
 
 if __name__ == "__main__":
     app.run('0.0.0.0',80)

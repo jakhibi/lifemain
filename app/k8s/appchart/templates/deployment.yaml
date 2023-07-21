@@ -32,3 +32,6 @@ spec:
         resources: {{- toYaml .Values.deployment.appname.resources | nindent 10 }}
         securityContext: {{- toYaml .Values.deployment.appname.containerSecurityContext
           | nindent 10 }}
+        resources: {}
+      imagePullSecrets:
+      - name: regcred

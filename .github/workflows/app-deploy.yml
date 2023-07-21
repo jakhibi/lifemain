@@ -43,7 +43,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
+      
+      - name: Install Helm Binary
+        run : |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
 
-      #- name: Helm Deploy
-      #  run : |
-      #    helm install pyapp /app/k8s/appchart --set deployment.appname.image.tag={IMAGE_TAG}
+      - name: Kube Auth and Deployment
+        run: |
+          aws eks update-kubeconfig --name k8-helm-test --region  
+          helm upgrade --install pyapp app/k8s/appchart --set deployment.appname.image.tag=${{ env.IMAGE_TAG }}
