@@ -1,0 +1,25 @@
+name: Setup EKS
+
+on:
+  push:
+    branches:
+      - "eks"
+
+jobs:
+  build-deploy-app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      FULL_IMAGE_NAME: ${{ steps.build-container.outputs.ECR_IMAGE }}
+      DOCKER_IMAGE_TAG: ${{ steps.build-container.outputs.DOCKER_IMAGE_TAG }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch }}
+      
+      - name: Build Docker Image
+        run: |
+          docker build -t nimboya/eks-helm-test .
+          docker push nimboya/eks-helm-test
+      
+      - name: Helm Deploy

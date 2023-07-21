@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "appchart.fullname" . }}-deployment
+  labels:
+  {{- include "appchart.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: appname
+    {{- include "appchart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: appname
+      {{- include "appchart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: STARTUP_YR
+          valueFrom:
+            secretKeyRef:
+              key: startup_yr
+              name: {{ include "appchart.fullname" . }}-appname
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.deployment.appname.image.repository }}:{{ .Values.deployment.appname.image.tag
+          | default .Chart.AppVersion }}
+        name: appname
+        ports:
+        - containerPort: 80
+        resources: {{- toYaml .Values.deployment.appname.resources | nindent 10 }}
+        securityContext: {{- toYaml .Values.deployment.appname.containerSecurityContext
+          | nindent 10 }}

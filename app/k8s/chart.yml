@@ -1,0 +1,82 @@
+---
+# Source: appchart/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-appchart-appname
+  labels:
+    helm.sh/chart: appchart-0.1.0
+    app.kubernetes.io/name: appchart
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "0.1.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  startup_yr: "MjAyMw=="
+---
+# Source: appchart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-appchart-service
+  labels:
+    helm.sh/chart: appchart-0.1.0
+    app.kubernetes.io/name: appchart
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "0.1.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: LoadBalancer
+  selector:
+    app: appname
+    app.kubernetes.io/name: appchart
+    app.kubernetes.io/instance: release-name
+  ports:
+  - port: 80
+    targetPort: 80
+---
+# Source: appchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-appchart-deployment
+  labels:
+    helm.sh/chart: appchart-0.1.0
+    app.kubernetes.io/name: appchart
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "0.1.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    matchLabels:
+      app: appname
+      app.kubernetes.io/name: appchart
+      app.kubernetes.io/instance: release-name
+  template:
+    metadata:
+      labels:
+        app: appname
+        app.kubernetes.io/name: appchart
+        app.kubernetes.io/instance: release-name
+    spec:
+      containers:
+      - env:
+        - name: STARTUP_YR
+          valueFrom:
+            secretKeyRef:
+              key: startup_yr
+              name: release-name-appchart-appname
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: "cluster.local"
+        image: nimboya/eks-helm-test:latest
+        name: appname
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 32Mi
+        securityContext:
+          allowPrivilegeEscalation: false

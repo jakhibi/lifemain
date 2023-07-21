@@ -1,0 +1,22 @@
+appname:
+  startupYr: "2023"
+deployment:
+  appname:
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+    image:
+      repository: nimboya/eks-helm-test
+      tag: latest
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 32Mi
+kubernetesClusterDomain: cluster.local
+service:
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer

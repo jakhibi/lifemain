@@ -1,0 +1,52 @@
+name: Deloy App to EKS
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build-deploy-app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - id: new-image-name
+        run: |
+          ABBREV_COMMIT="$(git log -1 --format=%h)"
+          IMAGE_TAG="${{ github.run_id }}-${{ github.run_attempt }}-${ABBREV_COMMIT}"
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> "$GITHUB_ENV"
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          file: /app
+          context: .
+          push: true
+          tags: nimboya/k8-helm-test:{IMAGE_TAG}
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Helm Deploy
+        run : |
+          helm install pyapp /app/k8s/appchart --set deployment.appname.image.tag={IMAGE_TAG}
