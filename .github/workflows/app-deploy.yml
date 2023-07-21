@@ -38,7 +38,7 @@ jobs:
           file: /app
           context: .
           push: true
-          tags: nimboya/k8-helm-test:{IMAGE_TAG}
+          tags: nimboya/k8-helm-test:${{ env.IMAGE_TAG }}
       
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
