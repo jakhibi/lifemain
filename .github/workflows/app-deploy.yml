@@ -35,7 +35,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          file: /app
+          file: app/
           context: .
           push: true
           tags: nimboya/k8-helm-test:${{ env.IMAGE_TAG }}
