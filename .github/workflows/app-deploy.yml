@@ -52,5 +52,5 @@ jobs:
 
       - name: Kube Auth and Deployment
         run: |
-          aws eks update-kubeconfig --name k8-helm-test --region  
+          aws eks update-kubeconfig --name k8-helm-test --region eu-west-1
           helm upgrade --install pyapp app/k8s/appchart --set deployment.appname.image.tag=${{ env.IMAGE_TAG }}
