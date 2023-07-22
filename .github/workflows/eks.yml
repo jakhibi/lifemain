@@ -13,13 +13,15 @@ jobs:
       FULL_IMAGE_NAME: ${{ steps.build-container.outputs.ECR_IMAGE }}
       DOCKER_IMAGE_TAG: ${{ steps.build-container.outputs.DOCKER_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.branch }}
+      - name: Code Checkout
+        uses: actions/checkout@v3
       
-      - name: Build Docker Image
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+      
+      - name: Terraform Workflow
         run: |
-          docker build -t nimboya/eks-helm-test .
-          docker push nimboya/eks-helm-test
+          terraform init
+          terraform plan
+          terraform apply
       
-      - name: Helm Deploy
